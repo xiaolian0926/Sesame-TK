@@ -1,0 +1,54 @@
+名字: Android CI
+在:
+释放；排放；发布:
+类型: [published]
+工作:
+建设:
+许可: write-all
+连续运行: ubuntu-latest
+步伐:
+      - 使用: actions/checkout@v3
+随着:
+提取深度: 0
+      - 名字: set up JDK 11
+使用: actions/setup-java@v3
+随着:
+java版本: '11'
+分布: 特穆林
+隐藏物: gradle
+      - 名字: Grant execute permission for gradlew
+奔跑: chmod +x gradlew
+      - 名字: Build with Gradle
+奔跑: ./gradlew assembleDebug
+      - 名字: Upload to Release Action
+使用: Shopify/upload-to-release@v1.0.1
+随着:
+名字: app-${{ github.event.release.tag_name }}.apk
+小路: app/build/outputs/apk/debug/app-debug.apk
+回购令牌: ${{ github.token }}
+内容类型: 应用程序/zip名字: 名称:安卓人工耳蜗植入
+
+在:
+推:
+分支: [分支:[ "主要" ]"主要" ]
+拉取请求:
+分支: [分支:[ "主要" ]"主要" ]
+
+工作:
+建设:
+
+连续运行: 运行:Ubuntu-最新版
+
+步伐:
+    - 使用: - uses: actions/checkout@v4
+    - 名字: -名称:建立JDK 11
+使用: 用法:操作/设置-java@v4
+随着:
+java版本: '11'
+分布: 特穆林
+隐藏物: 缓存:gradle
+
+    - 名字: - name:授予gradlew执行权限
+奔跑: run: chmod +x gradlew
+    - 名字: -名称:与Gradle一起构建
+奔跑: 运行:。/gradlew版本
