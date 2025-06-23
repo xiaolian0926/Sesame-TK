@@ -1,111 +1,111 @@
-name: Android CI
+名字: Android CI
 
-on:
-  push:
-    branches: ["develop"]
-  pull_request:
-    branches: ["develop"]
-  release:
-    types: [published]
-  workflow_dispatch:
+在:
+推:
+分支: [“开发”]
+拉取请求:
+分支: [“开发”]
+释放；排放；发布:
+类型: [出版]
+工作流_调度:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+工作:
+建设:
+连续运行: Ubuntu-最新版
 
-    steps:
-      - name: Set Timezone to Asia/Shanghai
-        run: |
-          sudo timedatectl set-timezone Asia/Shanghai
-          echo "Current time: $(date)"
+步伐:
+      - 名字: 将时区设置为亚洲/上海
+奔跑: |
+sudo时间日期设置-时区亚洲/上海
+回显“当前时间:$(日期)”
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - 名字: 检验
+使用: 动作/签出@v4
+随着:
+提取深度: 0
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "zulu"
-          cache: gradle
+      - 名字: 建立JDK
+使用: 操作/设置-java@v4
+随着:
+Java 语言(一种计算机语言，尤用于创建网站)语言（一种计算机语言,尤用于创建网站)版本: "17"
+分布: “祖鲁”
+隐藏物: 格拉德勒
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-read-only: false
-          gradle-version: wrapper
+      - 名字: 设置格拉德勒
+使用: gradle/actions/setup-gradle@v4
+随着:
+只读高速缓存: 错误的
+梯度版本: gradle-version:包装
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - 名字: - name:授予gradlew执行权限
+奔跑: run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew assembleNormalRelease assembleCompatibleRelease -Pversion=${{ github.ref_name }}
+      - 名字: -名称:与Gradle一起构建
+奔跑: 运行:。/grad Lew assemblienormalrelease assembliecompatiblerelease-p version = $ { { github . ref _ name } }{{ github.ref_name }}
 
-      - name: Locate APKs and Set Outputs
-        id: locate_apks
-        run: |
-          normal_apk=$(find app/build/outputs/apk/normal/release -name "*.apk" | head -n 1)
-          compatible_apk=$(find app/build/outputs/apk/compatible/release -name "*.apk" | head -n 1)
-          echo "normal_apk=$normal_apk" >> $GITHUB_OUTPUT
-          echo "compatible_apk=$compatible_apk" >> $GITHUB_OUTPUT
+      - 名字: -名称:定位apk并设置输出
+身份证明(识别): id: locate_apks
+奔跑: |
+normal _ apk = $(find app/build/outputs/apk/normal/release-name " *。apk " head -n 1)
+compatible _ apk = $(find app/build/outputs/apk/compatible/release-name " *。apk " head -n 1)
+echo " normal _ apk = $ normal _ apk " > > $ GITHUB _ OUTPUT
+echo " compatible _ apk = $ compatible _ apk " > > $ GITHUB _ OUTPUT
 
-      - name: Copy APKs to staging for signing
-        run: |
-          mkdir -p app/build/outputs/apk/all
-          cp "${{ steps.locate_apks.outputs.normal_apk }}" app/build/outputs/apk/all/
-          cp "${{ steps.locate_apks.outputs.compatible_apk }}" app/build/outputs/apk/all/
+      - 名字: -名称:将apk复制到暂存区进行签名
+奔跑: |
+mkdir -p应用程序/构建/输出/apk/所有
+CP “$ { {步。locate _ apks。产出。normal _ apk } } "应用程序/构建/输出/apk/所有/
+CP “$ { {步。locate _ apks。产出。compatible _ apk } } "应用程序/构建/输出/apk/所有/
 
-      - name: Sign APKs
-        id: sign_apks
-        uses: ilharp/sign-android-release@v2
-        with:
-          releaseDir: app/build/outputs/apk/all
-          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
-          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          buildToolsVersion: 36.0.0
+      - 名字: -姓名:签名APKs
+身份证明(识别): id: sign_apks
+使用: 用途:ilharp/sign-android-release@v2
+随着:
+发布目录: release dir:app/build/outputs/apk/all
+签名密钥: 签名密钥:${{ secrets。ANDROID_SIGNING_KEY }}{{ secrets.ANDROID_SIGNING_KEY }}
+凯亚利亚斯: keyAlias: ${{机密。ANDROID_KEY_ALIAS }}{{ secrets.ANDROID_KEY_ALIAS }}
+密钥存储密码: keyStorePassword: ${{ secrets。ANDROID_KEYSTORE_PASSWORD }}{{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+关键口令: 关键词:${{机密。ANDROID_KEY_PASSWORD }}{{ secrets.ANDROID_KEY_PASSWORD }}
+构建工具版本: 36.0.0
 
-      - name: Extract Signed APK Paths
-        id: extract_apks
-        run: |
-          IFS=':' read -r -a files <<< "${{ steps.sign_apks.outputs.signedFiles }}"
-          for file in "${files[@]}"; do
-            if [[ "$file" == *Normal* ]]; then
-              echo "signed_normal=$file" >> $GITHUB_OUTPUT
-            elif [[ "$file" == *Compatible* ]]; then
-              echo "signed_compatible=$file" >> $GITHUB_OUTPUT
-            fi
-          done
+      - 名字: - name:提取签名的APK路径
+身份证明（identification）: id: id: id: id: id: id: id: id: id: id: extract_apks
+奔跑: |
+IFS = ':' read-r-a files < < < " " $ { { steps . sign _ apks . outputs . signed files } } "
+对于“${files[@]}”中的文件；做
+if[[" $ file " = = * Normal *]]；然后
+echo " signed _ normal = $ file " > > $ GITHUB _ OUTPUT
+elif[[" $ file " = = *兼容*]]；然后
+回声"已签名的兼容文件= $ file "> > $ GITHUB _ OUTPUT
+船方不负担装货费用
+完成的
 
-      - name: Upload APK - Compatible
-        uses: actions/upload-artifact@v4
-        with:
-          name: apk-compatible
-          path: ${{ steps.extract_apks.outputs.signed_compatible }}
+      - 名字: 上传APK兼容的
+使用: 动作/上传-工件@v4
+随着:
+名字: apk兼容
+小路: ${{steps . extract _ apks . outputs . signed _ compatible}}
 
-      - name: Upload APK - Normal
-        uses: actions/upload-artifact@v4
-        with:
-          name: apk-normal
-          path: ${{ steps.extract_apks.outputs.signed_normal }}
+      - 名字: 上传APK -正常
+使用: 动作/上传-工件@v4
+随着:
+名字: apk-正常
+小路: ${{steps . extract _ apks . outputs . signed _ normal}}
 
-      - name: Extract file names
-        id: extract_info
-        run: |
-          normal_file=$(basename "${{ steps.extract_apks.outputs.signed_normal }}")
-          compatible_file=$(basename "${{ steps.extract_apks.outputs.signed_compatible }}")
-          # 提取版本号（以"Normal-"或"Compatible-"之后的部分为起点，以"-signed"之前的内容为终点）
-          version=$(echo "$normal_file" | sed -E 's/.*-(Normal|Compatible)-(.*)-signed\.apk/\2/')
-          echo "normal_file=$normal_file" >> $GITHUB_OUTPUT
-          echo "compatible_file=$compatible_file" >> $GITHUB_OUTPUT
+      - 名字: 提取文件名
+身份证明（identification）: 摘录信息
+奔跑: |
+normal _ file = $(basename " $ { { steps . extract _ apks . outputs . signed _ normal } } ")
+compatible _ file = $(basename " $ { { steps . extract _ apks . outputs . signed _ compatible } } ")
+# 提取版本号（以“正常——”或“兼容——”之后的部分为起点,以"-已签名"之前的内容为终点)
+版本= $(回显" $ normal _ file "sed-Es/1000 .*-(正常兼容)-(。*)-已签名“apk/ 2/”)
+回声"正常文件= $正常文件"> > $ GITHUB _ OUTPUT
+echo " compatible _ file = $ compatible _ file " > > $ GITHUB _ OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT
 
-      - name: Generate APKS Checksum
-        run: |
-          sha256sum ${{ steps.extract_apks.outputs.signed_normal }} > CHECKSUMS-Sesame-Normal-${{ steps.extract_info.outputs.version }}.${{ env.SHORT_SHA }}-signed.apk.sha256
+      - 名字: 生成APKS校验和
+奔跑: |
+sha 256 sum $ { { steps . extract _ apks . outputs . signed _ Normal } } >校验和-芝麻-正常-$ { { steps . extract _ info . outputs . version } }。${{ env .SHORT_SHA }}-signed.apk.sha256
           sha256sum ${{ steps.extract_apks.outputs.signed_compatible }} > CHECKSUMS-Sesame-Compatible-${{ steps.extract_info.outputs.version }}.${{ env.SHORT_SHA }}-signed.apk.sha256
 
       - name: Get Commit Details
@@ -196,27 +196,4 @@ jobs:
 
             ${{ steps.commit_details.outputs.COMMIT_MESSAGE_BODY }}
             > ## 下载说明
-              * Normal 为正常版本,适用于`Android 8.0`及以上的系统
-              * Compatible 为兼容版本,适用于`Android 7.0`及以下的系统,最低支持`Android 5.1`
-
-            > ~~墙内不再更新~~ 倒卖必死全家
-      - name: Sync Release to Target Repository
-        uses: softprops/action-gh-release@v2
-        with:
-          repository: Xposed-Modules-Repo/fansirsqi.xposed.sesame # 目标仓库的拥有者和仓库名称
-          name: ${{ github.event.release.tag_name || steps.extract_info.outputs.version }} # 发布的名称。默认为标签名称
-          files: |
-            ${{ steps.sign_normal_apk.outputs.signedFile }}
-            ${{ steps.sign_compatible_apk.outputs.signedFile }}
-            CHECKSUMS-Sesame-Normal-${{ steps.extract_info.outputs.version }}.${{ env.SHORT_SHA }}-signed.apk.sha256
-            CHECKSUMS-Sesame-Compatible-${{ steps.extract_info.outputs.version }}.${{ env.SHORT_SHA }}-signed.apk.sha256
-          token: ${{ secrets.TARGET_REPO_PAT }}
-          tag_name: ${{ steps.extract_info.outputs.version }}
-          draft: false
-          prerelease: ${{ steps.pre_release.outputs.IS_PRERELEASE }}
-          append_body: false
-          make_latest: true
-          body: |
-            📦 本 Release 同步自源仓库 [Sesame-TK](https://github.com/${{ github.repository }})
-            ✨ **更新内容**:
-            ${{ github.event.release.body || '无更新说明' }}
+            
